@@ -3,7 +3,7 @@ type: command_stdout
 name: out_forward
 command: bench.rb
 stdout_to_metrics: |
-  match = stdout.match(/^best result: (?<lps>\d+) lines\/s /)
+  match = stdout.match(/^best result: (?<lps>\d+) lines\/s/)
   Float(match[:lps])
 metrics_type:
   unit: lines/s

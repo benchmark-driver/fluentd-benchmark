@@ -100,6 +100,12 @@ bench = Benchmarker.new(
   receiver_conf: File.expand_path('receiver.conf', __dir__),
   dummer_conf:   File.expand_path('dummer.conf', __dir__),
 )
+
+puts "best result: #{bench.measure_lines_per_sec(5500000)} lines/s"
+
+# Use following script to find the best messages/s for you
+__END__
+
 best_lps = 0
 second_lps = 0 # for later bisect
 
