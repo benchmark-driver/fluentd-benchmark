@@ -1,6 +1,7 @@
 require 'tempfile'
 require 'shellwords'
 require 'fileutils'
+require 'bundler'
 
 class DummerRunner
   # @param [String] conf
@@ -9,15 +10,17 @@ class DummerRunner
   end
 
   def start(rate)
-    unless system(['bundle', 'exec', 'dummer', 'start', '-c', @conf, '-r', rate.to_s, '-d'].shelljoin, out: File::NULL)
-      raise 'Failed to start dummer!'
+    Bundler.with_clean_env do
+      unless system(['bundle', 'exec', 'dummer', 'start', '-c', @conf, '-r', rate.to_s, '-d'].shelljoin, out: File::NULL)
+        raise 'Failed to start dummer!'
+      end
     end
   end
 
   def stop
     tries = 0
     loop do
-      output = IO.popen('bundle exec dummer stop', &:read)
+      output = Bundler.with_clean_env { IO.popen('bundle exec dummer stop', &:read) }
       unless $?.success?
         raise "Failed to stop dummer!: #{output}"
       end
@@ -28,14 +31,6 @@ class DummerRunner
       end
     end
   end
-
-  private
-
-  def execute(*args)
-    unless system(*args)
-      raise "failed to execute: #{args.shelljoin} (status: #{$?.exitstatus})"
-    end
-  end
 end
 
 class FluentdRunner
@@ -43,7 +38,9 @@ class FluentdRunner
   def initialize(conf:)
     @conf = conf
     @log = Tempfile.new('fluentd-benchmark')
-    @pid = Process.spawn('bundle', 'exec', 'fluentd', '-c', @conf, out: @log.path)
+    Bundler.with_clean_env do
+      @pid = Process.spawn('bundle', 'exec', 'fluentd', '-c', @conf, out: @log.path)
+    end
   end
 
   def stop
