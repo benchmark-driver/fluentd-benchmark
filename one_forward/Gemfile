@@ -5,4 +5,4 @@ gem 'dummer'
 gem 'fluent-plugin-flowcounter-simple'
 
 # This does not work when target ruby is <= 2.1. Please run `gem install benchmark_driver`
-# gem 'benchmark_driver', '>= 0.10.7'
+# gem 'benchmark_driver', '>= 0.10.8'
